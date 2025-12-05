@@ -61,33 +61,31 @@ User → Cloud Storage → Cloud Run → Hugging Face API → Chart.js Visualiza
 
 ---
 
-## 🛠 Project Structure
-📦 RankifyHR
-├── 🗂 Architecture
-│   ├── 📸 demo Screenshots
-│   │   ├── 1.png
-│   │   ├── 2.png
-│   │   ├── 3.png
-│   │   ├── FrontendUI.png
-│   ├── Google Bucket Config.png
-│   ├── GoogleRun Config.png
-│   └── RankifyHR_Architecture Diagram.png
-│   
-├── 📁 Assets
-│       ├── Resume_1_Python_Developer.pdf
-│       ├── Resume_2_Frontend_Developer.pdf
-│       ├── Resume_3_DevOps_Engineer.pdf
-│       ├── Resume_4_Data_Scientist.pdf
-│       └── Resume_5_Cloud_Engineer.pdf
-│
-├── 🧠 Backend
-│   ├── main.py
-│   └── requirements.txt
-│
-├── 🎨 Frontend
-│   └── index_dark_v2.html
-│
-└── 📘 README.md
+## 🗂️ Project Structure
+
+- **RankifyHR/**
+  - **Architecture/**
+    - **demo Screenshots/**
+      - `1.png`
+      - `2.png`
+      - `3.png`
+    - `FrontendUI.png`
+    - `Google Bucket Config.png`
+    - `GoogleRun Config.png`
+    - `RankifyHR_Architecture Diagram.png`
+  - **Assets/**
+    - `Resume_1_Python_Developer.pdf`
+    - `Resume_2_Frontend_Developer.pdf`
+    - `Resume_3_DevOps_Engineer.pdf`
+    - `Resume_4_Data_Scientist.pdf`
+    - `Resume_5_Cloud_Engineer.pdf`
+  - **Backend/**
+    - `main.py`
+    - `requirements.txt`
+  - **Frontend/**
+    - `index_dark_v2.html`
+  - `README.md`
+
 
 ---
 
