@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RankifyHR — Smart Resume Ranker</title>
+
+  <!-- Professional Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0a0f1a;
+      --card-bg: #111827;
+      --border: #1f2937;
+      --primary: #3b82f6;
+      --accent: #60a5fa;
+      --text: #e5e7eb;
+      --subtext: #9ca3af;
+      --error: #ef4444;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      background: linear-gradient(90deg, #1e3a8a, #2563eb);
+      color: white;
+      text-align: center;
+      padding: 25px 10px;
+      width: 100%;
+      box-shadow: var(--shadow);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    header p {
+      margin-top: 5px;
+      font-size: 15px;
+      color: #bfdbfe;
+    }
+
+    main {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 30px;
+      width: 90%;
+      max-width: 850px;
+      margin-top: 40px;
+      box-shadow: var(--shadow);
+      animation: fadeIn 0.6s ease;
+    }
+
+    h2 {
+      color: var(--accent);
+      font-size: 18px;
+      font-weight: 600;
+      margin-top: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      background: #0f172a;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 15px;
+      margin-top: 8px;
+      margin-bottom: 20px;
+      resize: vertical;
+      transition: border 0.25s ease, box-shadow 0.3s ease;
+    }
+
+    textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+      outline: none;
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 28px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .loader {
+      border: 4px solid #1e293b;
+      border-top: 4px solid var(--accent);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    #results { margin-top: 30px; }
+
+    .card {
+      background: #0f172a;
+      border: 1px solid #1f2937;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.02);
+      border-color: var(--accent);
+    }
+
+    .score { font-weight: 600; color: var(--accent); }
+    .badge {
+      display: inline-block;
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--accent);
+      border-radius: 12px;
+      padding: 4px 10px;
+      margin: 2px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--subtext);
+      font-size: 13px;
+      margin-top: 40px;
+      padding-bottom: 20px;
+    }
+
+    small { color: var(--subtext); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>💼 RankifyHR</h1>
+    <p>AI-Powered Cloud Resume Ranking System</p>
+  </header>
+
+  <main>
+    <h2>Job Description</h2>
+    <textarea id="jd" placeholder="Enter the job description here..."></textarea>
+
+    <h2>Candidate Resumes</h2>
+    <p style="font-size:13px;color:#94a3b8;">Upload one or more PDF resumes or paste text below:</p>
+    <input type="file" id="pdfInput" multiple accept="application/pdf" style="margin-bottom:10px;">
+    <textarea id="resumes" placeholder="Paste multiple resumes separated by ---"></textarea>
+
+    <button onclick="rank()">Rank Resumes</button>
+
+    <div id="loader" style="display:none;">
+      <div class="loader"></div>
+      <p style="text-align:center;color:var(--subtext);">Analyzing resumes... please wait ⏳</p>
+    </div>
+
+    <div id="results"></div>
+    <canvas id="scoreChart" style="margin-top:30px; max-width:700px;"></canvas>
+  </main>
+
+  <footer>© 2025 RankifyHR | Cloud-Native Resume Analyzer</footer>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    const API_URL = "https://rankifyhr-687295303995.asia-south2.run.app"; // Replace with your backend URL
+
+    // Handle PDF uploads
+    document.getElementById('pdfInput')?.addEventListener('change', async (event) => {
+      const files = event.target.files;
+      const texts = [];
+      for (let file of files) {
+        const text = await readPdf(file);
+        texts.push(text);
+      }
+      document.getElementById('resumes').value = texts.join('\n---\n');
+    });
+
+    async function readPdf(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64String = reader.result.split(",")[1]; // clean Base64 string
+      fetch(API_URL + '/extract', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pdf: base64String })
+      })
+      .then(res => res.json())
+      .then(data => resolve(data.text || ""))
+      .catch(err => reject(err));
+    };
+    reader.readAsDataURL(file); // 👈 key change: read as Data URL
+  });
+}
+
+
+    function splitResumes(txt) {
+      return txt.split(/---/).map(r => r.trim()).filter(Boolean);
+    }
+
+    async function rank() {
+      const jd = document.getElementById("jd").value.trim();
+      const resumes = splitResumes(document.getElementById("resumes").value);
+      const resultsDiv = document.getElementById("results");
+      const loader = document.getElementById("loader");
+
+      if (!jd || resumes.length === 0) {
+        alert("Please enter a job description and at least one resume.");
+        return;
+      }
+
+      resultsDiv.innerHTML = "";
+      loader.style.display = "block";
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ job_description: jd, resumes })
+        });
+
+        const data = await res.json();
+        loader.style.display = "none";
+
+        if (data.results) {
+          resultsDiv.innerHTML = data.results.map((r, i) => `
+            <div class="card" style="border:${i === 0 ? '2px solid gold; box-shadow:0 0 10px gold;' : '1px solid #1f2937'};">
+              <div><span class="score">Resume ${r.resume_id}</span> — Score: ${r.final_score}%</div>
+              <div>Similarity: ${r.similarity}% | Bonus: ${r.bonus}%</div>
+              <div>Matched Skills: ${(r.matched_skills || []).map(s => `<span class="badge">${s}</span>`).join(' ') || '—'}</div>
+              <p><small>${r.preview}</small></p>
+            </div>
+          `).join('');
+
+          const ctx = document.getElementById('scoreChart').getContext('2d');
+          const labels = data.results.map(r => `Resume ${r.resume_id}`);
+          const scores = data.results.map(r => r.final_score);
+
+          if (window.scoreChart && typeof window.scoreChart.destroy === "function") {
+            window.scoreChart.destroy();
+        }
+        window.scoreChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Final Scores',
+                    data: scores,
+                    backgroundColor: labels.map((_, i) => i === 0 ? 'gold' : '#3b82f6')
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        title: { display: true, text: 'Score (%)' }
+                        } 
+                    }
+                }
+        });
+
+        } else {
+          resultsDiv.innerHTML = `<p style="color:red;">${data.error || "Unexpected issue occurred."}</p>`;
+        }
+      } catch (err) {
+        loader.style.display = "none";
+        resultsDiv.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
